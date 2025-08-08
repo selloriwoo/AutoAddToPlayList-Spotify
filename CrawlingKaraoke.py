@@ -49,6 +49,9 @@ results = []
 for item in items:
     if all(k in item for k in ("pro", "indexTitle", "indexSong")):
         results.append({k: item[k] for k in ("pro", "indexTitle", "indexSong")})
-print(results)
+resultTitle = []
+for item in results:
+    resultTitle.append(str(item["indexTitle"]).split('(')[0].strip())
+print(resultTitle)
 print(f"{len(items)}개의 jpop 차트 데이터")
 print(len(jpop_chart), "개의 jpop 차트 데이터")
