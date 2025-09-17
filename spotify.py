@@ -8,8 +8,7 @@ import requests
 import urllib.parse
 import os
 import urllib.parse
-
-
+from pykospacing import Spacing
 import CrawlingKaraoke
 from TJGenreEnum import TJGenreEnum
 
@@ -50,8 +49,11 @@ def getTop100Songs(headers, genre_title_list, user_country):
         title = song["title"]
         artist = song["artist"]
 
+        # 띄어쓰기 자연어 처리
+        spacing = Spacing()
+        corrected_title = spacing(title)
         # 1차 검색: track + artist
-        query1 = urllib.parse.quote(f'track:"{title}" artist:"{artist}"')
+        query1 = urllib.parse.quote(f'track:"{corrected_title}" artist:"{artist}"')
         url1 = f"https://api.spotify.com/v1/search?q={query1}&type=track&market={user_country}&limit=1"
         response1 = requests.get(url1, headers=headers)
         items1 = response1.json().get("tracks", {}).get("items", [])
@@ -60,16 +62,16 @@ def getTop100Songs(headers, genre_title_list, user_country):
             # 1차 검색 성공
             track_id = items1[0]["id"]
             result_spotify_song_id.append(f"spotify:track:{track_id}")
-            print(f"✅ 검색 성공 (track+artist): {title} - {artist}")
+            print(f"✅ 검색 성공 (track+artist): {corrected_title} - {artist}")
             continue
         # 1차 검색 실패 → 2차 검색: "제목 아티스트"
-        query2 = urllib.parse.quote(f"{title} {artist}")
+        query2 = urllib.parse.quote(f"{corrected_title} {artist}")
         url2 = f"https://api.spotify.com/v1/search?q={query2}&type=track&market={user_country}&limit=1"
         response2 = requests.get(url2, headers=headers)
         items2 = response2.json().get("tracks", {}).get("items", [])
         track_id = items2[0]["id"]
         result_spotify_song_id.append(f"spotify:track:{track_id}")
-        print(f"❌ 검색 실패: {title} {artist} (문자열로 검색)")
+        print(f"❌ 검색 실패: {corrected_title} {artist} (문자열로 검색)")
 
     print("✅ 리스트 추가 완료")
     return result_spotify_song_id
