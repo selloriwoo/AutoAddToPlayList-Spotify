@@ -1,0 +1,20 @@
+<h1>환영합니다. {{ user.display_name }}님!</h1>
+<form action="/submit" method="post">
+
+  <h3>본인의 스포티파이 플레이 리스트 url (your own spotify playList url)</h3>
+  <input type="text" name="playlist_url" placeholder="https://open.spotify.com/playlist/..." size="100">
+  <br><br>
+
+  <h3>계정의 스포티파이 국가를 적어주세요 JP(일본), KR(한국), US(일본) 기본값 설정 (your country)</h3>
+  <input type="text" name="country_url" placeholder="KR" value= "{{ user_country }}" size="5">
+  <br><br>
+
+  <h3>장르 선택</h3>
+  {% for opt in radios %}
+    <label><input type="radio" name="genre" value="{{ opt }}"> {{ opt }}</label><br>
+  {% endfor %}
+  <br>
+  <h4>인기차트 1위부터 100위 까지 자동 등록 됩니다.</h4>
+
+  <button type="submit">제출</button>
+</form>
