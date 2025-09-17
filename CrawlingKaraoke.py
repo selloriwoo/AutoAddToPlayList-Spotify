@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 import json
 import ast
+
 # 오늘 날짜 구하기
 today = datetime.today()
 
@@ -29,29 +30,34 @@ def get_chart(strType):
     return response.json()
 
 
+# total_chart = get_chart("0") # 종합
 # kpop_chart = get_chart("1")  # 가요
-# kpop_chart = get_chart("2")  # pop
-jpop_chart = get_chart("3")  # jpop
-jpop_chart = str(jpop_chart)
-jpop_chart_json = ast.literal_eval(jpop_chart)
-results = []
+# pop_chart = get_chart("2")  # pop
+# jpop_chart = get_chart("3")  # jpop
 
-for item in jpop_chart_json.get("GNB_MENU", []):
-    if all(k in item for k in ("pro", "indexTitle", "indexSong")):
-        results.append({k: item[k] for k in ("pro", "indexTitle", "indexSong")})
-result_data = jpop_chart_json.get("resultData", {})
-items = result_data.get("items", [])
 
-results = []
-#pro: 곡번호
-#indexTitle: 제목
-#indexsong: 가수
-for item in items:
-    if all(k in item for k in ("pro", "indexTitle", "indexSong")):
-        results.append({k: item[k] for k in ("pro", "indexTitle", "indexSong")})
-resultTitle = []
-for item in results:
-    resultTitle.append(str(item["indexTitle"]).split('(')[0].strip())
-print(resultTitle)
-print(f"{len(items)}개의 jpop 차트 데이터")
-print(len(jpop_chart), "개의 jpop 차트 데이터")
+# tj노래방 종합, 가요,pop, jpop을 웹 상 index로 변환
+
+def total_chart_result_title(genre_number):
+    genre_chart = get_chart(genre_number)  # jpop, kpop...
+    # 디버깅: genre_chart 타입 확인
+    print("type(genre_chart) =", type(genre_chart))
+    print("genre_chart =", genre_chart)
+
+    result_data = genre_chart.get("resultData", {})
+    items = result_data.get("items", [])
+    results = []
+    # pro: 곡번호
+    # indexTitle: 제목
+    # indexsong: 가수
+    for item in items:
+        if all(k in item for k in ("pro", "indexTitle", "indexSong")):
+            title = str(item["indexTitle"]).split("(")[0].strip()  # 괄호 제거
+            artist = str(item["indexSong"]).strip()
+            results.append({
+                "pro": item["pro"],
+                "title": title,
+                "artist": artist
+            })
+    return results
+
